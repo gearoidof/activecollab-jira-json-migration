@@ -134,7 +134,7 @@ def iterate_tickets(append, skipPrivate)
 		case append
 		when "/archive"
 			status = "Closed"
-			resolution = "Fixed"
+			resolution = "Done"
 		else
 			status = "Open"
 			resolution = nil
