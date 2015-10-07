@@ -150,7 +150,7 @@ def iterate_tickets(append, skipPrivate)
 		{
 			"summary" =>  raw["name"],
 			"description" => body(raw["body"]),
-			"issueType" => "Story",
+			"issueType" => "Task",
 			"status" => status,
 			"resolution" => resolution,
 			"priority" => priority,
