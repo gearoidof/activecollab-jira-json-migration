@@ -128,9 +128,9 @@ def iterate_tickets(append, skipPrivate)
 		when 1
 			"Critical"
 		when 2
-			"Blocker"
+			"High"
 		else
-			"Major"
+			"Normal"
 		end
 
 		status = nil
