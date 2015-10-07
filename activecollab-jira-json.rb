@@ -108,7 +108,12 @@ def iterate_tickets(append, skipPrivate)
 		#p raw
 
 		assignee = nil
+		watchers = []
 		if raw["assignees"]
+			raw["assignees"].each do |assignee|
+				watchers.push(get_email(assignee["user_id"]));
+			end
+
 			filtered = raw["assignees"].delete_if {|e| !e["is_owner"]}
 			unless filtered.empty?
 				assignee = get_email(filtered.first["user_id"])
@@ -176,7 +181,8 @@ def iterate_tickets(append, skipPrivate)
 				}
 			end,
 			"assignee" => assignee,
-			"reporter" => get_email(raw["created_by_id"])
+			"reporter" => get_email(raw["created_by_id"]),
+			"watchers" => watchers
 		}
 	end
 end
