@@ -5,9 +5,9 @@ require "uri"
 require "json"
 require "time"
 
-if (ARGV.size != 5)
-	$stderr.puts "Usage: ./active-collab-jira-json.rb AC_URL AC_USER_API_KEY AC_PROJECT_ID JIRA_PROJECT_ID SKIP_PRIVATE > export.json"
-	$stderr.puts "Example: ./active-collab-jira-json.rb http://ac.mydomain.name 20-123213123123123 12 JIRAPROJ 0 > export.json"
+if (ARGV.size != 6)
+	$stderr.puts "Usage: ./active-collab-jira-json.rb AC_URL AC_USER_API_KEY AC_PROJECT_ID JIRA_PROJECT_ID SKIP_PRIVATE SKIP_ARCHIVE > export.json"
+	$stderr.puts "Example: ./active-collab-jira-json.rb http://ac.mydomain.name 20-123213123123123 12 JIRAPROJ 0 1 > export.json"
 	$stderr.puts "And import it to Jira!"
 	exit(0)
 end
@@ -19,6 +19,7 @@ KEY = ARGV[1]
 PROJECT_ID = ARGV[2].to_i
 TARGET_PROJECT = ARGV[3]
 SKIP_PRIVATE = ARGV[4];
+SKIP_ARCHIVE = ARGV[5];
 BASE_URL = "%s/api.php\?token\=%s\&format\=json\&path_info\=" % [URL, KEY]
 
 $EMAILS = {}
@@ -180,12 +181,18 @@ def iterate_tickets(append, skipPrivate)
 	end
 end
 
-def export_project(skipPrivate)
+def export_project(skipPrivate, skipArchive)
+	issues = iterate_tickets("", skipPrivate)
+
+	if skipArchive == "0"
+		issues = issues.concat(iterate_tickets("/archive", skipPrivate))
+	end
+
 	{
 		"projects" =>
 			[
 				{
-					"issues" => iterate_tickets("", skipPrivate).concat(iterate_tickets("/archive", skipPrivate)),
+					"issues" => issues,
 					"key" => TARGET_PROJECT,
 					"versions" =>
 						$MILESTONES.reject {|key, value| value.nil? }.collect do |k, v|
@@ -207,4 +214,4 @@ def export_project(skipPrivate)
 end
 
 
-puts export_project(SKIP_PRIVATE)
+puts export_project(SKIP_PRIVATE, SKIP_ARCHIVE)
